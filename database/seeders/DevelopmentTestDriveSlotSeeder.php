@@ -33,7 +33,7 @@ class DevelopmentTestDriveSlotSeeder extends Seeder
             $vehicle = $allocation->vehicle;
             foreach (self::demoDates() as $date) {
                 $slotDate = $date->copy()->startOfDay();
-                foreach (config('test-drive.demo_slot_times') as [$start, $end]) {
+                foreach (config('business-calendar.test_drive_slots') as [$start, $end]) {
                     TestDriveSlot::query()->updateOrCreate(
                         ['dealer_vehicle_allocation_id' => $allocation->id, 'slot_date' => $slotDate, 'start_time' => $start, 'end_time' => $end],
                         ['vehicle_id' => $vehicle->id],

@@ -1,1 +1,0 @@
-[{"action":{"requestHeaders":[{"header":"Extension","operation":"set","value":"crosspilot"}],"type":"modifyHeaders"},"condition":{"resourceTypes":["main_frame"],"urlFilter":"*://crosspilot.io/*"},"id":1,"priority":10}]

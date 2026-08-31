@@ -110,12 +110,12 @@ class SalesmanTestDriveWorkflowTest extends TestCase
         $appointment = $this->appointment($customer, $vehicle, $salesman);
 
         $this->actingAs($salesman)->putJson(route('salesman.test-drives.update', $appointment), $this->updatePayload([
-            'slot_id' => $this->slot($vehicle, '2026-09-08', '16:30', '17:00')->id, 'status' => 'rescheduled',
+            'slot_id' => $this->slot($vehicle, '2026-09-08', '16:00', '16:30')->id, 'status' => 'rescheduled',
         ]))->assertOk()->assertJsonPath('success', true)->assertJsonPath('message', 'Test Drive rescheduled successfully.');
 
         $appointment->refresh();
         $this->assertSame('2026-09-08', $appointment->scheduled_date->format('Y-m-d'));
-        $this->assertStringStartsWith('16:30', $appointment->scheduled_time);
+        $this->assertStringStartsWith('16:00', $appointment->scheduled_time);
         $this->assertSame(TestDriveStatus::Rescheduled, $appointment->status);
     }
 

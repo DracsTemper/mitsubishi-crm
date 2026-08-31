@@ -27,10 +27,9 @@ class TestDriveSlotAndBookingPaymentTest extends TestCase
         $otherCustomer = Customer::factory()->create(['salesman_id' => $salesman->id]);
         $this->testDrive($otherCustomer, $vehicle, $salesman, $booked);
 
-        $this->actingAs($salesman)->get(route('salesman.customers.test-drives.create', $customer))
+        $this->actingAs($salesman)->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => '2026-09-02']))
             ->assertOk()->assertSee('10:00 AM')->assertSee('AVAILABLE')->assertSee('BOOKED')
-            ->assertSee('value="'.$available->id.'"', false)
-            ->assertSee('value="'.$booked->id.'"', false)->assertSee('is-booked', false)
+            ->assertSee('name="slot_choice"', false)->assertSee('is-booked', false)
             ->assertDontSee('name="scheduled_time"', false);
     }
 

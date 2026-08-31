@@ -8,6 +8,7 @@ use App\Http\Requests\Salesman\StoreTestDriveRequest;
 use App\Http\Requests\Salesman\StoreCalendarTestDriveRequest;
 use App\Http\Requests\Salesman\UpdateTestDriveRequest;
 use App\Models\Customer;
+use App\Models\DealerVehicleAllocation;
 use App\Models\TestDrive;
 use App\Models\TestDriveSlot;
 use App\Models\Vehicle;
@@ -19,10 +20,14 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Carbon;
+use App\Services\BusinessCalendar;
+use App\Services\TestDriveAvailability;
+use App\Enums\TestDriveOutcome;
+use App\Enums\TestDriveLossReason;
 
 class TestDriveController extends Controller
 {
-    public function calendar(Request $request): View
+    public function calendar(Request $request, BusinessCalendar $businessCalendar, TestDriveAvailability $availability): View
     {
         try {
             $weekStart = Carbon::parse($request->string('week')->toString() ?: today()->toDateString())->startOfWeek();
@@ -30,14 +35,11 @@ class TestDriveController extends Controller
             $weekStart = today()->startOfWeek();
         }
         $weekEnd = $weekStart->copy()->endOfWeek();
-        $allocations = $this->dealerVehicles($request)
-            ->with(['demoAllocations' => fn ($query) => $query
-                ->where('dealer_id', $request->user()->dealer_id)
-                ->where('status', 'active')])
-            ->orderBy('name')->orderBy('variant')->get();
+        $allocations = $this->dealerAllocations($request)->with('vehicle')->get()
+            ->sortBy(fn (DealerVehicleAllocation $allocation) => $allocation->vehicle->name.' '.$allocation->vehicle->variant)->values();
 
         $vehicleId = $request->integer('vehicle');
-        if ($vehicleId && ! $allocations->contains('id', $vehicleId)) {
+        if ($vehicleId && ! $allocations->contains('vehicle_id', $vehicleId)) {
             abort(404);
         }
         $status = $request->string('status')->toString();
@@ -45,13 +47,11 @@ class TestDriveController extends Controller
             abort(404);
         }
 
-        $slots = $this->dealerSlots($request, false)
-            ->whereBetween('slot_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-            ->when($vehicleId, fn (Builder $query) => $query->where('vehicle_id', $vehicleId))
-            ->when($status === 'available', fn (Builder $query) => $query->whereDoesntHave('testDrive'))
-            ->when($status === 'booked', fn (Builder $query) => $query->whereHas('testDrive'))
-            ->with(['testDrive.customer'])
-            ->get();
+        $days = collect(range(0, 6))->map(fn (int $day) => $weekStart->copy()->addDays($day));
+        $visibleAllocations = $allocations->when($vehicleId, fn ($items) => $items->where('vehicle_id', $vehicleId));
+        $slots = $availability->forRange($visibleAllocations, $days)
+            ->when($status === 'available', fn ($items) => $items->where('is_booked', false)->where('is_bookable', true))
+            ->when($status === 'booked', fn ($items) => $items->where('is_booked', true))->values();
 
         return view('pages.salesman.calendar', [
             'allocations' => $allocations,
@@ -59,10 +59,11 @@ class TestDriveController extends Controller
             'customers' => $this->ownedCustomers($request)->orderBy('name')->get(),
             'weekStart' => $weekStart,
             'weekEnd' => $weekEnd,
-            'days' => collect(range(0, 6))->map(fn (int $day) => $weekStart->copy()->addDays($day)),
+            'days' => $days,
+            'closureReasons' => $days->mapWithKeys(fn (Carbon $day) => [$day->toDateString() => $businessCalendar->closureReason($day)]),
             'vehicleId' => $vehicleId,
             'statusFilter' => $status,
-            'availableCount' => $slots->where('is_booked', false)->count(),
+            'availableCount' => $slots->where('is_booked', false)->where('is_bookable', true)->count(),
             'bookedCount' => $slots->where('is_booked', true)->count(),
         ]);
     }
@@ -79,21 +80,30 @@ class TestDriveController extends Controller
         return view('pages.salesman.test-drives.index', compact('testDrives'));
     }
 
-    public function create(Request $request, string $customer): View
+    public function create(Request $request, string $customer, BusinessCalendar $businessCalendar, TestDriveAvailability $availability): View
     {
         $customer = $this->ownedCustomers($request)->findOrFail($customer);
+        try {
+            $selectedDate = Carbon::createFromFormat('Y-m-d', $request->string('date')->toString() ?: today()->toDateString())->startOfDay();
+        } catch (\Throwable) {
+            $selectedDate = today();
+        }
+        $allocations = $this->dealerAllocations($request)->with('vehicle')->get()
+            ->sortBy(fn (DealerVehicleAllocation $allocation) => $allocation->vehicle->name)->values();
 
         return view('pages.salesman.test-drives.create', [
             'customer' => $customer,
-            'vehicles' => $this->dealerVehicles($request)->orderBy('name')->orderBy('variant')->get(),
-            'slots' => $this->dealerSlots($request)->get(),
+            'vehicles' => $allocations->pluck('vehicle'),
+            'slots' => $availability->forRange($allocations, collect([$selectedDate])),
+            'selectedDate' => $selectedDate,
+            'closureReason' => $businessCalendar->closureReason($selectedDate),
         ]);
     }
 
     public function store(StoreTestDriveRequest $request, string $customer): RedirectResponse
     {
         $customer = $this->ownedCustomers($request)->findOrFail($customer);
-        $testDrive = $this->schedule($request, $customer, (int) $request->validated('slot_id'), $request->validated('notes'));
+        $testDrive = $this->schedule($request, $customer, $request->validated());
 
         return redirect()->route('salesman.test-drives.show', $testDrive)
             ->with('success', 'Test Drive scheduled successfully.');
@@ -102,7 +112,7 @@ class TestDriveController extends Controller
     public function storeFromCalendar(StoreCalendarTestDriveRequest $request): RedirectResponse|JsonResponse
     {
         $customer = $this->ownedCustomers($request)->findOrFail($request->validated('customer_id'));
-        $testDrive = $this->schedule($request, $customer, (int) $request->validated('slot_id'), $request->validated('notes'));
+        $testDrive = $this->schedule($request, $customer, $request->validated());
         $week = $testDrive->scheduled_date->copy()->startOfWeek()->toDateString();
         $refreshUrl = route('salesman.calendar', ['week' => $week]);
 
@@ -126,6 +136,8 @@ class TestDriveController extends Controller
         return view('pages.salesman.test-drives.show', [
             'testDrive' => $testDrive,
             'statuses' => TestDriveStatus::cases(),
+            'outcomes' => TestDriveOutcome::cases(),
+            'lossReasons' => TestDriveLossReason::cases(),
         ]);
     }
 
@@ -145,8 +157,12 @@ class TestDriveController extends Controller
     public function update(UpdateTestDriveRequest $request, string $testDrive): RedirectResponse|JsonResponse
     {
         $testDrive = $this->ownedTestDrives($request)->findOrFail($testDrive);
+        if ($testDrive->outcome !== null && $request->validated('status') !== TestDriveStatus::Completed->value) {
+            throw ValidationException::withMessages(['status' => 'A Test Drive with a recorded Customer decision must remain completed.']);
+        }
         DB::transaction(function () use ($request, $testDrive): void {
             $slot = $this->dealerSlots($request)->lockForUpdate()->findOrFail($request->validated('slot_id'));
+            $this->assertWorkingSlot($slot->slot_date, $slot->start_time, 'slot_id');
             if ($slot->vehicle_id !== $testDrive->vehicle_id) {
                 throw ValidationException::withMessages(['slot_id' => 'Rescheduling must use a Slot for the same Vehicle model.']);
             }
@@ -197,6 +213,14 @@ class TestDriveController extends Controller
             ->where('status', 'active'));
     }
 
+    /** @return Builder<DealerVehicleAllocation> */
+    private function dealerAllocations(Request $request): Builder
+    {
+        return DealerVehicleAllocation::query()
+            ->where('dealer_id', $request->user()->dealer_id)
+            ->where('status', 'active');
+    }
+
     private function dealerSlots(Request $request, bool $futureOnly = true): Builder
     {
         return TestDriveSlot::query()
@@ -208,12 +232,30 @@ class TestDriveController extends Controller
             ->orderBy('slot_date')->orderBy('start_time');
     }
 
-    private function schedule(Request $request, Customer $customer, int $slotId, ?string $notes): TestDrive
+    /** @param array<string, mixed> $data */
+    private function schedule(Request $request, Customer $customer, array $data): TestDrive
     {
-        return DB::transaction(function () use ($request, $customer, $slotId, $notes): TestDrive {
-            $slot = $this->dealerSlots($request)->lockForUpdate()->findOrFail($slotId);
+        return DB::transaction(function () use ($request, $customer, $data): TestDrive {
+            if (! empty($data['slot_id'])) {
+                $slot = $this->dealerSlots($request)->lockForUpdate()->findOrFail($data['slot_id']);
+                $this->assertWorkingSlot($slot->slot_date, $slot->start_time, 'slot_id');
+            } else {
+                $allocation = $this->dealerAllocations($request)->lockForUpdate()->findOrFail($data['allocation_id']);
+                $date = Carbon::createFromFormat('Y-m-d', $data['slot_date'])->startOfDay();
+                $endTime = $this->assertWorkingSlot($date, $data['start_time'], 'slot_choice');
+                $slot = TestDriveSlot::query()->firstOrCreate(
+                    [
+                        'dealer_vehicle_allocation_id' => $allocation->id,
+                        'slot_date' => $date,
+                        'start_time' => $data['start_time'],
+                        'end_time' => $endTime,
+                    ],
+                    ['vehicle_id' => $allocation->vehicle_id],
+                );
+                $slot = TestDriveSlot::query()->lockForUpdate()->findOrFail($slot->id);
+            }
             if ($slot->testDrive()->exists()) {
-                throw ValidationException::withMessages(['slot_id' => 'This Test Drive Slot has already been booked.']);
+                throw ValidationException::withMessages([! empty($data['slot_id']) ? 'slot_id' : 'slot_choice' => 'This Test Drive Slot has already been booked.']);
             }
 
             return TestDrive::query()->create([
@@ -223,9 +265,27 @@ class TestDriveController extends Controller
                 'slot_id' => $slot->id,
                 'scheduled_date' => $slot->slot_date,
                 'scheduled_time' => $slot->start_time,
-                'notes' => $notes,
+                'notes' => $data['notes'] ?? null,
                 'status' => TestDriveStatus::Scheduled,
             ]);
         });
+    }
+
+    private function assertWorkingSlot(Carbon|string $date, string $startTime, string $field): string
+    {
+        $date = $date instanceof Carbon ? $date->copy()->startOfDay() : Carbon::parse($date)->startOfDay();
+        if ($date->isBefore(today())) {
+            throw ValidationException::withMessages([$field => 'Test Drives cannot be scheduled in the past.']);
+        }
+        $businessCalendar = app(BusinessCalendar::class);
+        if ($reason = $businessCalendar->closureReason($date)) {
+            throw ValidationException::withMessages([$field => 'The outlet is closed on this date. '.$reason.'.']);
+        }
+        $endTime = $businessCalendar->endTimeFor($startTime);
+        if (! $endTime) {
+            throw ValidationException::withMessages([$field => 'The selected time is not a configured Test Drive Slot.']);
+        }
+
+        return $endTime;
     }
 }

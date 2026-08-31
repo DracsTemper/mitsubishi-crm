@@ -33,11 +33,11 @@ class TestDriveSlotUxDemoDateCorrectionTest extends TestCase
         [$salesman, $customer] = $this->demoContext();
         $this->seed(DevelopmentBookingSeeder::class);
 
-        $response = $this->actingAs($salesman->fresh())->get(route('salesman.customers.test-drives.create', $customer));
+        $response = $this->actingAs($salesman->fresh())->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => '2026-09-02']));
         $response->assertOk()
             ->assertSee('1. Select Date')
             ->assertSee('2. Demo / Test Drive Vehicle')
-            ->assertSee('No slots available for this date.')
+            ->assertSee('configured Slots')
             ->assertSee('BOOKED')
             ->assertSee('AVAILABLE')
             ->assertDontSee('name="scheduled_time"', false);

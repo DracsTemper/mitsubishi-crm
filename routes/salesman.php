@@ -3,6 +3,7 @@
 use App\Http\Controllers\Salesman\CustomerController;
 use App\Http\Controllers\Salesman\BookingController;
 use App\Http\Controllers\Salesman\TestDriveController;
+use App\Http\Controllers\Salesman\TestDriveOutcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('salesman')
@@ -24,7 +25,9 @@ Route::prefix('salesman')
         Route::post('/customers/{customer}/test-drives', [TestDriveController::class, 'store'])->name('customers.test-drives.store');
         Route::get('/test-drives/{testDrive}/edit', [TestDriveController::class, 'edit'])->name('test-drives.edit');
         Route::match(['put', 'patch'], '/test-drives/{testDrive}', [TestDriveController::class, 'update'])->name('test-drives.update');
+        Route::post('/test-drives/{testDrive}/outcome', [TestDriveOutcomeController::class, 'store'])->name('test-drives.outcome.store');
         Route::get('/test-drives/{testDrive}', [TestDriveController::class, 'show'])->name('test-drives.show');
+        Route::get('/follow-ups', [TestDriveOutcomeController::class, 'followUps'])->name('follow-ups.index');
         Route::get('/calendar', [TestDriveController::class, 'calendar'])->name('calendar');
         Route::post('/calendar/test-drives', [TestDriveController::class, 'storeFromCalendar'])->name('calendar.test-drives.store');
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings');

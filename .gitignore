@@ -19,6 +19,11 @@
 /storage/*.key
 /storage/pail
 /vendor
+/.edge-*
+/.f*-cookie.txt
+/.f*-headers.txt
+/.f*-response.html
+/.f*-testdrive.html
 Homestead.json
 Homestead.yaml
 Thumbs.db

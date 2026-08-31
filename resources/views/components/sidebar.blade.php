@@ -5,7 +5,7 @@ $authenticatedUser = auth()->user();
 $authenticatedDealer = $authenticatedUser?->dealer?->name;
 $authenticatedInitials = $authenticatedUser ? str($authenticatedUser->name)->explode(' ')->filter()->take(2)->map(fn($part)=>strtoupper(substr($part,0,1)))->join('') : 'AU';
 if ($salesman) {
-    $nav = [['salesman.dashboard','Dashboard','grid'],['salesman.customers.*','My Customers','users'],['salesman.conversations','Conversations','chat'],['salesman.test-drives.*','Test Drives','calendar'],['salesman.calendar','Calendar','calendar'],['salesman.bookings','Bookings','book'],['salesman.chassis','Chassis','car'],['salesman.deliveries','Deliveries','car']];
+    $nav = [['salesman.dashboard','Dashboard','grid'],['salesman.customers.*','My Customers','users'],['salesman.conversations','Conversations','chat'],['salesman.test-drives.*','Test Drives','calendar'],['salesman.follow-ups.*','Follow-Ups','calendar'],['salesman.calendar','Calendar','calendar'],['salesman.bookings','Bookings','book'],['salesman.chassis','Chassis','car'],['salesman.deliveries','Deliveries','car']];
     $portal='SALESMAN WORKSPACE'; $initials=$authenticatedInitials; $user=$authenticatedUser?->name ?? 'Salesman'; $role=$authenticatedDealer ?? 'No Dealer assigned';
 } elseif ($dealer) {
     $nav = [['dealer.dashboard','Dashboard','grid'],['dealer.team','Sales Team','users'],['dealer.customers.*','Customers','users'],['dealer.test-drives','Test Drives','calendar'],['dealer.bookings','Bookings','book'],['dealer.inventory','Inventory','car'],['dealer.chassis','Chassis','car'],['dealer.deliveries','Deliveries','car'],['dealer.reports','Reports','chart']];

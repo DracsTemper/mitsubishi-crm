@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\TestDriveStatus;
+use App\Enums\TestDriveOutcome;
+use App\Enums\TestDriveLossReason;
 use Database\Factories\TestDriveFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +26,11 @@ class TestDrive extends Model
         'scheduled_date',
         'scheduled_time',
         'status',
+        'outcome',
+        'follow_up_date',
+        'outcome_notes',
+        'loss_reason',
+        'decided_at',
         'notes',
     ];
 
@@ -61,12 +68,19 @@ class TestDrive extends Model
         return [
             'scheduled_date' => 'date',
             'status' => TestDriveStatus::class,
+            'outcome' => TestDriveOutcome::class,
+            'loss_reason' => TestDriveLossReason::class,
+            'follow_up_date' => 'date',
+            'decided_at' => 'datetime',
         ];
     }
 
     protected static function booted(): void
     {
         static::saving(function (TestDrive $testDrive): void {
+            if ($testDrive->exists && $testDrive->getOriginal('outcome') !== null && $testDrive->isDirty('outcome')) {
+                throw new InvalidArgumentException('A recorded Customer decision cannot be overwritten.');
+            }
             if ($testDrive->customer_id && $testDrive->salesman_id) {
                 $owned = Customer::query()
                     ->whereKey($testDrive->customer_id)

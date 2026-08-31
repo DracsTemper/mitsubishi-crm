@@ -112,13 +112,13 @@ class SalesmanTestDriveCalendarTest extends TestCase
         [$vehicle, $slot] = $this->allocatedSlot($dealer, 'Xforce');
 
         $calendar = $this->actingAs($salesman)->get(route('salesman.calendar', ['week' => today()->startOfWeek()->toDateString()]));
-        $schedule = $this->get(route('salesman.customers.test-drives.create', $customer));
+        $schedule = $this->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => $slot->slot_date->toDateString()]));
         $calendar->assertSee($vehicle->name)->assertSee('AVAILABLE');
-        $schedule->assertSee($vehicle->name)->assertSee((string) $slot->id, false)->assertSee('AVAILABLE');
+        $schedule->assertSee($vehicle->name)->assertSee('10:00 AM')->assertSee('AVAILABLE');
 
         $this->post(route('salesman.customers.test-drives.store', $customer), ['slot_id' => $slot->id])->assertRedirect();
         $this->get(route('salesman.calendar', ['week' => today()->startOfWeek()->toDateString()]))->assertSee('BOOKED');
-        $this->get(route('salesman.customers.test-drives.create', $customer))->assertSee('BOOKED');
+        $this->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => $slot->slot_date->toDateString()]))->assertSee('BOOKED');
     }
 
     public function test_slot_seeder_covers_every_active_allocation_and_is_idempotent(): void
