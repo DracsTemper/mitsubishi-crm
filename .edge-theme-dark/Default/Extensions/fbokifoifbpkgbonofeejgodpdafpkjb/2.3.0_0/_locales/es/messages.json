@@ -1,0 +1,156 @@
+{
+   "_lang": {
+      "message": "Español"
+   },
+   "browser_extension": {
+      "message": "Extensión del navegador"
+   },
+   "browser_ressource": {
+      "message": "Recurso del navegador"
+   },
+   "desc": {
+      "message": "Descripción"
+   },
+   "description": {
+      "message": "Recibe información de un dominio directamente en el navegador cuando navegas por un sitio web."
+   },
+   "disabled": {
+      "message": "Desactivado"
+   },
+   "domain_unknown": {
+      "message": "No se pudieron encontrar datos para la página solicitada.\nEs probable que este sea un dominio local o no válido."
+   },
+   "enabled": {
+      "message": "Activado"
+   },
+   "hostname": {
+      "message": "Nombre de host"
+   },
+   "internal_domain": {
+      "message": "Dominio interno"
+   },
+   "local_ressource": {
+      "message": "El documento solicitado se obtuvo de la computadora local."
+   },
+   "more_info": {
+      "message": "Información adicional"
+   },
+   "multi_domain": {
+      "message": "Dominio se refiere a múltiples direcciones IP."
+   },
+   "name": {
+      "message": "Nombre"
+   },
+   "offline_companymanaged": {
+      "message": "uDomainFlag es administrado actualmente por su empresa. Puede haber un problema de configuración."
+   },
+   "offline_description": {
+      "message": "El servidor $hostname$ no pudo ser alcanzado o devolvió una respuesta incorrecta.\nPor favor, inténtelo de nuevo más tarde.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "dfdata.bella.network"
+         }
+      }
+   },
+   "offline_title": {
+      "message": "No puedo acceder al servidor"
+   },
+   "options_changelog": {
+      "message": "Registro de cambios"
+   },
+   "options_companymanaged": {
+      "message": "Su organización administra la configuración de esta extensión."
+   },
+   "options_companymanaged_fill": {
+      "message": "La configuración de esta extensión puede ser administrada por $company$. Si tiene alguna pregunta, comuníquese con $support$.",
+      "placeholders": {
+         "company": {
+            "content": "$1",
+            "example": "Feel Good Inc."
+         },
+         "support": {
+            "content": "$2",
+            "example": "it-support@company.invalid"
+         }
+      }
+   },
+   "options_companymanaged_title": {
+      "message": "Administrada por la empresa"
+   },
+   "options_connection": {
+      "message": "Conexión"
+   },
+   "options_crashreporting": {
+      "message": "Informes de fallos"
+   },
+   "options_crashreports": {
+      "message": "El informe de fallos es actualmente"
+   },
+   "options_crashreports_why": {
+      "message": "Los informes de fallos ayudan en la detección y corrección de errores y mejoran la estabilidad de uDomainFlag. No se recopilan ni transmiten datos personales."
+   },
+   "options_help_translate": {
+      "message": "Ayúdanos a traducir uDomainFlag a tu idioma en:"
+   },
+   "options_howitworks": {
+      "message": "¿Quieres saber cómo funciona uDomainFlag en detalle? Descúbrelo a continuación"
+   },
+   "options_imprint": {
+      "message": "Legal"
+   },
+   "options_privacypolicy": {
+      "message": "Política de privacidad"
+   },
+   "options_secureconnection": {
+      "message": "Su conexión a $hostname$ está asegurada usando $protocol$ ($cipher$).",
+      "placeholders": {
+         "cipher": {
+            "content": "$3",
+            "example": "TLS_AES_256_GCM_SHA384"
+         },
+         "hostname": {
+            "content": "$1",
+            "example": "dfdata.bella.network"
+         },
+         "protocol": {
+            "content": "$2",
+            "example": "TLSv1.3"
+         }
+      }
+   },
+   "options_secureconnection_failed": {
+      "message": "Su conexión con $hostname$ falló. La funcionalidad completa de uDomainFlag no está disponible.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "dfdata.bella.network"
+         }
+      }
+   },
+   "options_translation": {
+      "message": "Traducción"
+   },
+   "options_version": {
+      "message": "Versión"
+   },
+   "options_yourversion": {
+      "message": "Está utilizando uDomainFlag $version$ con ID de extensión $extensionid$.",
+      "placeholders": {
+         "extensionid": {
+            "content": "$2",
+            "example": "eklbfdpploakpkdakoielobggbhemlnm"
+         },
+         "version": {
+            "content": "$1",
+            "example": "1.2.3.4"
+         }
+      }
+   },
+   "privacy": {
+      "message": "Intimidad"
+   },
+   "unknown": {
+      "message": "Desconocido"
+   }
+}

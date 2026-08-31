@@ -1,0 +1,14 @@
+/* Prevent dashboard columns and equal-height panels from escaping wrapped rows. */
+.content > .row > [class*="col-"] {
+    min-width: 0;
+}
+
+.content > .row .panel {
+    overflow: hidden;
+}
+
+@media (max-width: 1199.98px) {
+    .content > .row .panel.h-100 {
+        height: auto !important;
+    }
+}

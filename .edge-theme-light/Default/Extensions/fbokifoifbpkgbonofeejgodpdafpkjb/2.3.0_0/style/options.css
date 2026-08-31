@@ -1,0 +1,48 @@
+body {
+	line-height: 1.5;
+	padding: 0px 5px;
+}
+a {
+	color: cornflowerblue;
+	text-decoration: none;
+}
+hr {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 0;
+	border-top: 1px solid #eee;
+}
+h2 {
+	margin: 10px 0px 5px;
+	font-size: 110%;
+}
+.howitworks, .crash {
+	margin-bottom: 7px;
+	margin-top: 5px;
+}
+div.crash-desc {
+	font-style: italic;
+	margin-top: 3px;
+	padding-left: 10px;
+}
+span.companymanaged_title {
+	font-weight: bold;
+}
+img.titleimg {
+	vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #292a2d;
+		color: rgb(184, 191, 197);
+	}
+	h2 {
+		color: rgb(232,234,237);
+	}
+	a {
+		color: rgb(138,180,248);
+	}
+}
+.footer, .links {
+	text-align: center;
+}

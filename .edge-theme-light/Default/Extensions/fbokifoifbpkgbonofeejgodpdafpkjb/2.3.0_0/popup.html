@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>uDomainFlag</title>
+
+	<script type="text/javascript" src="script/sentry.min.js"></script>
+	<script type="text/javascript" src="script/storage.js"></script>
+	<script type="text/javascript" src="script/parameters.js"></script>
+	<script type="text/javascript" src="script/domainflag.js"></script>
+	<script type="text/javascript" src="script/popup.js"></script>
+	<script type="text/javascript" src="script/lang.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/style/popup.css" />
+	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
+</head>
+<body>
+
+<div class="container greenbox">
+	<!-- LOCATION INFO -->
+	<div class="header">
+		<div class="country"></div>
+		<div class="country2"></div>
+		<div class="warning">
+			<div class="reason"></div>
+			<div class="image">
+				<img src="/images/svg/warning-white.svg" style="width: 32px;" alt="!" />
+			</div>
+		</div>
+	</div>
+
+	<!-- BASIC INFO -->
+	<div class="contentblock">
+		<div class="line">
+			<div class="title">IP</div>
+			<div class="content ip ipfield loader"><a target="_blank" href="#"></a></div>
+		</div>
+
+		<div class="line">
+			<div class="title" load-lang="hostname">Hostname</div>
+			<div class="content host loader"></div>
+		</div>
+	</div>
+
+	<!-- Multi IP -->
+	<div class="contentblock multiip" style="display: none;">
+		<div class="line">
+			<span class="longbox clickable" load-lang="multi_domain"></span> <span class="expand wotex">&rsaquo;</span>
+		</div>
+
+		<div class="content" style="display: none;"></div>
+	</div>
+
+	<!-- ISP -->
+	<div class="contentblock">
+		<div class="line">
+			<div class="title">ASN</div>
+			<div class="content asn loader"><a target="_blank" href="#"></a></div>
+		</div>
+
+		<div class="line">
+			<div class="title" load-lang="desc"></div>
+			<div class="content isp loader"></div>
+		</div>
+	</div>
+
+	<div class="contentblock cbsmall">
+		<div class="line">
+			<div class="neutral infolink">
+				<a target="_blank" href="#"><img src="/images/svg/info.svg" alt="i" /> <span class="text-more">More information</span></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

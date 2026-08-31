@@ -1,0 +1,80 @@
+@extends('layouts.app')
+@section('title', 'Test Drive Calendar')
+@section('content')
+<div id="salesman-calendar-workspace">
+    <x-page-heading title="Test Drive Calendar" subtitle="Live Demo Vehicle availability for {{ auth()->user()->dealer->name }}." eyebrow="DEALER-SCOPED WORKSPACE">
+        <a class="btn btn-outline-dark" href="{{ route('salesman.calendar', ['week' => today()->startOfWeek()->toDateString()]) }}">Today</a>
+    </x-page-heading>
+
+    <div class="calendar-summary mb-3">
+        <div><span>DEMO VEHICLES</span><strong>{{ $vehicleId ? 1 : $allocations->count() }}</strong><small>Active models in view</small></div>
+        <div><span>WEEKLY SLOTS</span><strong>{{ $slots->count() }}</strong><small>{{ $weekStart->format('d M') }} – {{ $weekEnd->format('d M Y') }}</small></div>
+        <div><span>AVAILABLE</span><strong class="text-success">{{ $availableCount }}</strong><small>Ready to schedule</small></div>
+        <div><span>BOOKED</span><strong class="text-danger">{{ $bookedCount }}</strong><small>Confirmed appointments</small></div>
+    </div>
+
+    <form class="panel panel-body calendar-toolbar mb-3" method="GET" action="{{ route('salesman.calendar') }}">
+        <input type="hidden" name="week" value="{{ $weekStart->toDateString() }}">
+        <div><label class="form-label" for="vehicle">Vehicle</label><select class="form-select" id="vehicle" name="vehicle"><option value="">All Vehicles</option>@foreach($allocations as $vehicle)<option value="{{ $vehicle->id }}" @selected($vehicleId === $vehicle->id)>{{ $vehicle->name }} · {{ $vehicle->variant }}</option>@endforeach</select></div>
+        <div><label class="form-label" for="status">Slot status</label><select class="form-select" id="status" name="status"><option value="">All statuses</option><option value="available" @selected($statusFilter === 'available')>Available</option><option value="booked" @selected($statusFilter === 'booked')>Booked</option></select></div>
+        <button class="btn btn-primary align-self-end" type="submit">Apply filters</button>
+        <a class="btn btn-outline-dark align-self-end" href="{{ route('salesman.calendar', ['week' => $weekStart->toDateString()]) }}">Reset</a>
+    </form>
+
+    <div class="calendar-week-nav mb-3">
+        <a class="btn btn-outline-dark" href="{{ route('salesman.calendar', ['week' => $weekStart->copy()->subWeek()->toDateString(), 'vehicle' => $vehicleId ?: null, 'status' => $statusFilter ?: null]) }}"><i class="bi bi-arrow-left"></i> Previous</a>
+        <div><span>WEEK OF</span><strong>{{ $weekStart->format('d M') }} – {{ $weekEnd->format('d M Y') }}</strong></div>
+        <a class="btn btn-outline-dark" href="{{ route('salesman.calendar', ['week' => $weekStart->copy()->addWeek()->toDateString(), 'vehicle' => $vehicleId ?: null, 'status' => $statusFilter ?: null]) }}">Next <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    @if($allocations->isEmpty())
+        <div class="panel"><div class="panel-body text-center py-5"><div class="crm-empty-icon"><i class="bi bi-car-front"></i></div><h3>No Demo Vehicles allocated</h3><p class="text-secondary">Ask your Dealer Manager to configure active Demo Vehicle allocations.</p></div></div>
+    @else
+        <div class="calendar-vehicle-stack">
+        @foreach($allocations->when($vehicleId, fn ($items) => $items->where('id', $vehicleId)) as $vehicle)
+            @php($vehicleSlots = $slots->where('vehicle_id', $vehicle->id))
+            <section class="panel calendar-vehicle-card">
+                <div class="calendar-vehicle-head">
+                    <div><span class="eyebrow">DEMO / TEST DRIVE VEHICLE</span><h2>{{ strtoupper($vehicle->name) }}</h2><p>{{ $vehicle->model_year }} Mitsubishi {{ $vehicle->name }} · {{ $vehicle->variant }} · {{ $vehicle->color }}</p></div>
+                    <div class="calendar-vehicle-count"><strong>{{ $vehicleSlots->where('is_booked', false)->count() }}</strong><span>available this week</span></div>
+                </div>
+                <div class="calendar-days">
+                @foreach($days as $day)
+                    @php($daySlots = $vehicleSlots->filter(fn ($slot) => $slot->slot_date->isSameDay($day)))
+                    <div class="calendar-day {{ $day->isToday() ? 'is-today' : '' }}">
+                        <div class="calendar-day-head"><span>{{ $day->format('D') }}</span><strong>{{ $day->format('d M') }}</strong></div>
+                        <div class="calendar-day-slots">
+                        @forelse($daySlots as $slot)
+                            @if($slot->is_booked)
+                                @php($isOwned = $slot->testDrive?->salesman_id === auth()->id())
+                                <a class="calendar-slot is-booked" @if($isOwned) href="{{ route('salesman.test-drives.show', $slot->testDrive) }}" @endif>
+                                    <span class="calendar-slot-time">{{ Carbon\Carbon::parse($slot->start_time)->format('g:i') }}–{{ Carbon\Carbon::parse($slot->end_time)->format('g:i A') }}</span>
+                                    <strong>BOOKED</strong><small>{{ $isOwned ? $slot->testDrive->customer->name : 'Dealer appointment' }}</small>
+                                </a>
+                            @else
+                                <details class="calendar-slot is-available">
+                                    <summary><span class="calendar-slot-time">{{ Carbon\Carbon::parse($slot->start_time)->format('g:i') }}–{{ Carbon\Carbon::parse($slot->end_time)->format('g:i A') }}</span><strong>AVAILABLE</strong><small>Book this slot</small></summary>
+                                    @if($customers->isNotEmpty())
+                                    <form method="POST" action="{{ route('salesman.calendar.test-drives.store') }}" data-crm-ajax data-refresh-selector="#salesman-calendar-workspace" class="calendar-book-form">
+                                        @csrf<input type="hidden" name="slot_id" value="{{ $slot->id }}">
+                                        <label for="customer-{{ $slot->id }}">Customer</label><select id="customer-{{ $slot->id }}" name="customer_id" class="form-select form-select-sm" required><option value="">Choose Customer</option>@foreach($customers as $customer)<option value="{{ $customer->id }}">{{ $customer->name }}</option>@endforeach</select>
+                                        <button class="btn btn-primary btn-sm" type="submit">Confirm Test Drive</button>
+                                    </form>
+                                    @else
+                                    <div class="calendar-no-customers"><span>You don't have any Customers yet.</span><a href="{{ route('salesman.customers.create') }}">Create Customer</a></div>
+                                    @endif
+                                </details>
+                            @endif
+                        @empty
+                            <div class="calendar-day-empty">No slots</div>
+                        @endforelse
+                        </div>
+                    </div>
+                @endforeach
+                </div>
+            </section>
+        @endforeach
+        </div>
+    @endif
+</div>
+@endsection

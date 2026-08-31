@@ -1,0 +1,31 @@
+:root { --sidebar: 220px; }
+.content { max-width: 1680px; margin-inline: auto; padding: 24px 26px 42px; }
+.topbar { height: 64px; }
+.command-hero { min-height: 220px; }
+.command-copy { padding: 27px 30px; }
+.command-metric { padding: 14px 18px; }
+.dashboard-grid .appointment-row {
+    grid-template-columns: 60px minmax(0, 1fr) auto;
+}
+.dashboard-grid .appointment-row > :first-child {
+    grid-row: 1 / span 2;
+}
+.dashboard-grid .appointment-row > :nth-child(3) {
+    grid-column: 2;
+}
+.dashboard-grid .appointment-row > :nth-child(4) {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+}
+@media (max-width: 767px) {
+    .content > .d-flex.flex-wrap > div:first-child {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .page-subtitle {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+.dashboard-grid { align-items: start; }

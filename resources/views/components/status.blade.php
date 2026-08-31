@@ -1,0 +1,1 @@
+<span class="badge-status status-{{ Str::slug($status) }}">{{ $status }}</span>

@@ -1,0 +1,9 @@
+@extends('layouts.app')
+@section('title', 'My Bookings')
+@section('content')
+<x-page-heading title="My Bookings" subtitle="Vehicle model Bookings and initial advance balances." eyebrow="SALESMAN · BOOKING PAYMENT"><a class="btn btn-outline-dark" href="{{ route('salesman.test-drives.index') }}">Open Test Drives</a></x-page-heading>
+<div class="panel mt-3"><div class="panel-header"><div><div class="eyebrow">BOOKING PIPELINE</div><h3 class="panel-title mt-1">Customer model reservations</h3></div></div>
+@if($bookings->isEmpty())<div class="panel-body text-center py-5"><div class="crm-empty-icon"><i class="bi bi-journal-check"></i></div><h3>No Bookings yet</h3><p class="text-secondary">Complete a Test Drive, then book the Vehicle model with an initial advance.</p></div>
+@else<div class="table-responsive"><table class="table crm-table align-middle"><thead><tr><th>Customer</th><th>Vehicle model</th><th>Booking date</th><th>Total paid</th><th>Due</th><th>Status</th><th>Physical unit</th><th></th></tr></thead><tbody>@foreach($bookings as $booking)<tr><td><strong>{{ $booking->customer->name }}</strong><small class="d-block text-secondary">{{ $booking->customer->phone }}</small></td><td><strong>{{ $booking->vehicle->name }}</strong><small class="d-block text-secondary">{{ $booking->vehicle->variant }} · {{ $booking->vehicle->color }}</small></td><td>{{ $booking->booking_date->format('d M Y') }}</td><td>৳{{ number_format($booking->total_paid, 0) }}</td><td><strong>৳{{ number_format($booking->due_amount, 0) }}</strong></td><td><x-status :status="$booking->status->label()" /></td><td><span class="badge-status status-pending">Awaiting assignment</span></td><td><a class="btn btn-sm btn-primary" href="{{ route('salesman.bookings.show', $booking) }}">View</a></td></tr>@endforeach</tbody></table></div>@if($bookings->hasPages())<div class="panel-body border-top">{{ $bookings->links() }}</div>@endif
+@endif</div>
+@endsection
