@@ -8,7 +8,7 @@ $topTitle = $dashboard ? ($salesman ? 'My Customer Desk' : ($dealer ? (($outletN
 @endphp
 <header class="topbar">
     <button class="icon-btn mobile-toggle me-3" data-sidebar-toggle aria-label="Open navigation">@include('components.icon',['name'=>'menu'])</button>
-    <div><div class="eyebrow d-none d-sm-block">{{ ($dealer||$salesman) ? ($outletName ?? 'UNASSIGNED OUTLET') : 'MITSUBISHI MOTORS BANGLADESH' }}</div><h1>{{ $topTitle }}</h1></div>
+    <div><div class="eyebrow d-none d-sm-block">{{ ($dealer||$salesman) ? ($outletName ?? 'UNASSIGNED OUTLET') : 'DHS MOTORS BANGLADESH' }}</div><h1>{{ $topTitle }}</h1></div>
     <div class="top-actions">
         <div class="search-box" data-search-box>
             @include('components.icon',['name'=>'search'])<input id="globalSearch" autocomplete="off" placeholder="Search customers, vehicles...">

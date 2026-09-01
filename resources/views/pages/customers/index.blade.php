@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Customers')
 @section('content')
-<x-page-heading title="Customers" subtitle="Manage customer ownership across the Mitsubishi dealer network." eyebrow="ADMIN · CUSTOMER MANAGEMENT">
+<x-page-heading title="Customers" subtitle="Manage customer ownership across the DHS Motors dealer network." eyebrow="ADMIN · CUSTOMER MANAGEMENT">
     <a class="btn btn-primary" href="{{ route('customers.create') }}">+ Add Customer</a>
 </x-page-heading>
 @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif

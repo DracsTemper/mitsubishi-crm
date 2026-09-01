@@ -48,7 +48,7 @@ class PrototypePagesTest extends TestCase
     public function test_all_brand_and_vehicle_assets_exist(): void
     {
         foreach ([
-            'assets/images/brand/mitsubishi-mark.svg',
+            'assets/images/brand/honda-emblem-transparent.png',
             'assets/images/vehicles/outlander-2026.png',
             'assets/images/vehicles/xforce-2026.png',
             'assets/images/vehicles/triton-2026.png',
@@ -70,12 +70,15 @@ class PrototypePagesTest extends TestCase
             ->assertSee('[data-theme="light"]', false);
     }
 
-    public function test_page_loader_uses_the_real_mitsubishi_brand_asset(): void
+    public function test_page_loader_uses_the_dhs_motors_brand_asset(): void
     {
         $this->get('/login')
             ->assertOk()
             ->assertSee('id="pageLoader"', false)
-            ->assertSee('/assets/images/brand/mitsubishi-mark.svg', false)
+            ->assertSee('/assets/images/brand/honda-emblem-transparent.png', false)
+            ->assertSee('Drive Your Dreams')
+            ->assertSee('page-loader__ecg', false)
+            ->assertSee('dhs-ecg-travel', false)
             ->assertSee('mitsubishi-crm-transitioning', false);
     }
 

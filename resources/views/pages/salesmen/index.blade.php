@@ -3,7 +3,7 @@
 @section('title', 'Salesmen')
 
 @section('content')
-<x-page-heading title="Network Salesmen" subtitle="Every Salesman belongs to exactly one Mitsubishi Dealer." eyebrow="ADMIN · TEAM DIRECTORY">
+<x-page-heading title="Network Salesmen" subtitle="Every Salesman belongs to exactly one DHS Motors Dealer." eyebrow="ADMIN · TEAM DIRECTORY">
     <a class="btn btn-primary" href="{{ route('salesmen.create') }}">+ Register Salesman</a>
 </x-page-heading>
 

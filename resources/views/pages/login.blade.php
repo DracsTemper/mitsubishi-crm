@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Sign In · Mitsubishi CRM</title>
+    <title>Sign In · DHS Motors CRM</title>
     <script>
         (function(){const saved=localStorage.getItem('mitsubishi-crm-theme');const theme=['light','dark'].includes(saved)?saved:'dark';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme})();
     </script>
@@ -15,19 +15,20 @@
     <style>{!! file_get_contents(resource_path('css/themes.css')) !!}</style>
     <style>{!! file_get_contents(resource_path('css/login.css')) !!}</style>
     <style>{!! file_get_contents(resource_path('css/page-loader.css')) !!}</style>
+    <style>{!! file_get_contents(resource_path('css/branding.css')) !!}</style>
 </head>
 <body class="login-body">
 @include('components.page-loader')
 <main class="login-page login-page-refined">
-    <section class="login-visual" aria-label="Mitsubishi CRM introduction">
+    <section class="login-visual" aria-label="DHS Motors CRM introduction">
         <img class="login-vehicle" src="/images/outlander-command-hero.png" alt="Silver Mitsubishi Outlander">
         <div class="login-visual-shade"></div>
         <div class="login-brand">
-            <img src="/assets/images/brand/mitsubishi-mark.svg" alt="Mitsubishi">
-            <div><strong>MITSUBISHI</strong><span>CRM / DEALER MANAGEMENT</span></div>
+            <img src="/assets/images/brand/honda-emblem-transparent.png" alt="Honda emblem">
+            <div><strong><b class="dhs-word">DHS</b> MOTORS</strong><span class="brand-tagline">Drive Your Dreams</span></div>
         </div>
         <div class="login-copy">
-            <span class="login-kicker">MITSUBISHI MOTORS BANGLADESH</span>
+            <span class="login-kicker">DHS MOTORS BANGLADESH</span>
             <h1>Every customer journey.<br><span>One command center.</span></h1>
             <p>Manage customer relationships, dealer operations, bookings and vehicle inventory through one focused automotive workspace.</p>
             <div class="login-capabilities"><span><i class="bi bi-people" aria-hidden="true"></i> Customer intelligence</span><span><i class="bi bi-car-front" aria-hidden="true"></i> Vehicle operations</span><span><i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Network performance</span></div>
@@ -41,7 +42,7 @@
             <button class="theme-toggle" id="loginThemeToggle" type="button" aria-label="Switch theme"><span class="theme-toggle-icon"><i class="bi bi-sun-fill"></i></span><span class="theme-toggle-icon"><i class="bi bi-moon-stars-fill"></i></span></button>
         </div>
         <div class="login-card">
-            <div class="login-mobile-brand"><img src="/assets/images/brand/mitsubishi-mark.svg" alt=""><strong>MITSUBISHI CRM</strong></div>
+            <div class="login-mobile-brand"><img src="/assets/images/brand/honda-emblem-transparent.png" alt="Honda emblem"><strong><b class="dhs-word">DHS</b> MOTORS<span class="brand-tagline">Drive Your Dreams</span></strong></div>
             <div class="eyebrow mb-2">WELCOME BACK</div>
             <h2>{{ isset($loginContext) && $loginContext ? 'Sign in to the '.ucfirst($loginContext->value).' workspace' : 'Choose your workspace' }}</h2>
             <p class="login-intro">Enter your account credentials. Your verified account role determines the workspace you can access.</p>
@@ -55,10 +56,10 @@
             <div class="login-divider"><span>OR CONTINUE AS</span></div>
             <a href="{{ route('login', ['context' => 'dealer']) }}" class="dealer-entry"><span class="dealer-entry-icon"><i class="bi bi-buildings"></i></span><span><strong>Continue as Dealer</strong><small>Sign in to a dealer account</small></span><i class="bi bi-arrow-right ms-auto"></i></a>
             <a href="{{ route('login', ['context' => 'salesman']) }}" class="dealer-entry mt-2"><span class="dealer-entry-icon"><i class="bi bi-person-badge"></i></span><span><strong>Continue as Salesman</strong><small>Sign in to a salesman account</small></span><i class="bi bi-arrow-right ms-auto"></i></a>
-            <a href="{{ route('customer.login') }}" class="dealer-entry mt-2"><span class="dealer-entry-icon"><i class="bi bi-person"></i></span><span><strong>Continue as Customer</strong><small>Rahim Ahmed · My Mitsubishi</small></span><i class="bi bi-arrow-right ms-auto"></i></a>
+            <a href="{{ route('customer.login') }}" class="dealer-entry mt-2"><span class="dealer-entry-icon"><i class="bi bi-person"></i></span><span><strong>Continue as Customer</strong><small>Rahim Ahmed · My DHS Motors</small></span><i class="bi bi-arrow-right ms-auto"></i></a>
             <div class="login-notice"><i class="bi bi-info-circle"></i><span>Use the account credentials provided by your CRM administrator.</span></div>
         </div>
-        <footer class="login-footer"><span>© 2026 Mitsubishi Motors Bangladesh</span><span>CRM Prototype v1.0</span></footer>
+        <footer class="login-footer"><span>© 2026 DHS Motors Bangladesh</span><span>CRM Prototype v1.0</span></footer>
     </section>
 </main>
 <script>{!! file_get_contents(resource_path('js/page-loader.js')) !!}</script>

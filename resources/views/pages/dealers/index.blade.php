@@ -3,7 +3,7 @@
 @section('title', 'Dealers')
 
 @section('content')
-<x-page-heading title="Dealer Network" subtitle="Manage every Mitsubishi dealership organization." eyebrow="ADMIN · ENTIRE NETWORK">
+<x-page-heading title="Dealer Network" subtitle="Manage every DHS Motors dealership organization." eyebrow="ADMIN · ENTIRE NETWORK">
     <a class="btn btn-primary" href="{{ route('dealers.create') }}">+ Add Dealer</a>
 </x-page-heading>
 
@@ -16,7 +16,7 @@
         <div class="panel-body text-center py-5">
             <div class="eyebrow">DEALER NETWORK</div>
             <h3 class="mt-2">No dealer organizations yet.</h3>
-            <p class="text-secondary">Create the first Mitsubishi dealership organization to begin.</p>
+            <p class="text-secondary">Create the first DHS Motors dealership organization to begin.</p>
             <a class="btn btn-primary" href="{{ route('dealers.create') }}">Create Dealer</a>
         </div>
     </div>

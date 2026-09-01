@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title','Dashboard') · Mitsubishi CRM</title>
+    <title>@yield('title','Dashboard') · DHS Motors CRM</title>
     <script>
         (function () {
             const queryTheme = new URLSearchParams(location.search).get('theme');
@@ -30,6 +30,7 @@
     <style>{!! file_get_contents(resource_path('css/page-loader.css')) !!}</style>
     <style>{!! file_get_contents(resource_path('css/roles.css')) !!}</style>
     <style>{!! file_get_contents(resource_path('css/crm-polish.css')) !!}</style>
+    <style>{!! file_get_contents(resource_path('css/branding.css')) !!}</style>
 </head>
 <body>
     @include('components.page-loader')

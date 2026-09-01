@@ -8,8 +8,8 @@
             </div>
             <div class="panel-body">
                 <div class="row g-3">
-                    <div class="col-md-6"><label class="form-label">Company Name</label><input class="form-control" value="Mitsubishi Motors Bangladesh"></div>
-                    <div class="col-md-6"><label class="form-label">Support Email</label><input class="form-control" value="crm@mitsubishi.com.bd"></div>
+                    <div class="col-md-6"><label class="form-label">Company Name</label><input class="form-control" value="DHS Motors Bangladesh"></div>
+                    <div class="col-md-6"><label class="form-label">Support Email</label><input class="form-control" value="crm@dhsmotors.com.bd"></div>
                     <div class="col-12"><label class="form-label">Head Office</label><input class="form-control" value="Tejgaon Industrial Area, Dhaka 1208"></div>
                 </div>
             </div>

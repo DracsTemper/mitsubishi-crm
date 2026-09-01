@@ -1,7 +1,9 @@
 .page-loader{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#0b0c0d;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility 0s linear .22s}
 .page-loader.is-visible{opacity:1;visibility:visible;pointer-events:all;transition:opacity .16s ease,visibility 0s}
-.page-loader__brand{display:grid;place-items:center;gap:14px;color:#c8ccce;font-size:9px;font-weight:750;letter-spacing:.3em;transform:translateX(.15em)}
-.page-loader__brand img{display:block;width:58px;height:51px;object-fit:contain;filter:drop-shadow(0 0 0 rgba(237,27,47,0));animation:mitsubishi-loader-pulse .64s ease-in-out infinite;will-change:transform,opacity,filter}
-.page-loader__brand span{opacity:.58}
-@keyframes mitsubishi-loader-pulse{0%,100%{opacity:.55;transform:scale(.96);filter:drop-shadow(0 0 0 rgba(237,27,47,0))}50%{opacity:1;transform:scale(1.03);filter:drop-shadow(0 0 17px rgba(237,27,47,.26))}}
-@media(prefers-reduced-motion:reduce){.page-loader{transition-duration:.1s}.page-loader__brand img{animation:none;opacity:.92;transform:none;filter:drop-shadow(0 0 10px rgba(237,27,47,.15))}}
+.page-loader__brand{display:grid;place-items:center;gap:9px;color:#f4f5f5;text-align:center;transform:translateX(.08em)}
+.page-loader__brand img{display:block;width:112px;height:auto;object-fit:contain;filter:drop-shadow(0 7px 13px #0008)}
+.page-loader__brand strong{margin-top:4px;font-size:25px;letter-spacing:.025em}.page-loader__brand strong b{color:#ed1b2f}.page-loader__brand span{color:#b6b9bb;font-size:10px;font-weight:500;letter-spacing:.25em}.page-loader__brand em{color:#9a9ea1;font-size:9px;font-style:normal;letter-spacing:.08em}
+.page-loader__ecg{width:min(300px,72vw);height:50px;margin:14px 0 5px;overflow:visible}.page-loader__ecg path{fill:none;stroke:#ed1b2f;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:72 228;animation:dhs-ecg-travel 1.9s linear infinite,dhs-ecg-glow 1.9s cubic-bezier(.4,0,.2,1) infinite;filter:drop-shadow(0 0 4px #ed1b2f55)}
+@keyframes dhs-ecg-travel{from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
+@keyframes dhs-ecg-glow{0%,18%,100%{opacity:.62;filter:drop-shadow(0 0 2px #ed1b2f44)}38%{opacity:1;filter:drop-shadow(0 0 7px #ed1b2f99)}52%{opacity:.78;filter:drop-shadow(0 0 4px #ed1b2f66)}68%{opacity:1;filter:drop-shadow(0 0 6px #ed1b2f88)}}
+@media(prefers-reduced-motion:reduce){.page-loader{transition-duration:.1s}.page-loader__ecg path{animation:none;stroke-dasharray:none}.page-loader__brand img{filter:drop-shadow(0 5px 10px #0007)}}
