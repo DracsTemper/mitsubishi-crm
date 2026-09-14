@@ -27,7 +27,7 @@ class TestDriveSlotAndBookingPaymentTest extends TestCase
         $otherCustomer = Customer::factory()->create(['salesman_id' => $salesman->id]);
         $this->testDrive($otherCustomer, $vehicle, $salesman, $booked);
 
-        $this->actingAs($salesman)->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => '2026-09-02']))
+        $this->actingAs($salesman)->get(route('salesman.customers.test-drives.create', ['customer' => $customer, 'date' => today()->addDays(2)->toDateString()]))
             ->assertOk()->assertSee('10:00 AM')->assertSee('AVAILABLE')->assertSee('BOOKED')
             ->assertSee('name="slot_choice"', false)->assertSee('is-booked', false)
             ->assertDontSee('name="scheduled_time"', false);
@@ -42,7 +42,7 @@ class TestDriveSlotAndBookingPaymentTest extends TestCase
         $testDrive = TestDrive::query()->firstOrFail();
         $this->assertSame($slot->id, $testDrive->slot_id);
         $this->assertSame($vehicle->id, $testDrive->vehicle_id);
-        $this->assertSame('2026-09-02', $testDrive->scheduled_date->format('Y-m-d'));
+        $this->assertSame(today()->addDays(2)->format('Y-m-d'), $testDrive->scheduled_date->format('Y-m-d'));
         $this->assertStringStartsWith('15:00', $testDrive->scheduled_time);
 
         $secondCustomer = Customer::factory()->create(['salesman_id' => $salesman->id]);
@@ -125,7 +125,7 @@ class TestDriveSlotAndBookingPaymentTest extends TestCase
 
     private function slot(Vehicle $vehicle, string $start = '10:00', string $end = '10:30'): TestDriveSlot
     {
-        return TestDriveSlot::query()->create(['vehicle_id' => $vehicle->id, 'slot_date' => '2026-09-02', 'start_time' => $start, 'end_time' => $end]);
+        return TestDriveSlot::query()->create(['vehicle_id' => $vehicle->id, 'slot_date' => today()->addDays(2)->toDateString(), 'start_time' => $start, 'end_time' => $end]);
     }
 
     private function testDrive(Customer $customer, Vehicle $vehicle, User $salesman, TestDriveSlot $slot, TestDriveStatus $status = TestDriveStatus::Scheduled): TestDrive
@@ -135,6 +135,6 @@ class TestDriveSlotAndBookingPaymentTest extends TestCase
 
     private function bookingPayload(array $overrides = []): array
     {
-        return array_merge(['booking_date' => '2026-09-02', 'expected_delivery_date' => '2026-09-20', 'booking_amount' => 500000, 'notes' => 'Advance received.'], $overrides);
+        return array_merge(['booking_date' => today()->toDateString(), 'expected_delivery_date' => today()->addDays(10)->toDateString(), 'booking_amount' => 500000, 'notes' => 'Advance received.'], $overrides);
     }
 }

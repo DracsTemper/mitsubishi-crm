@@ -92,8 +92,8 @@ class BookingWorkflowTest extends TestCase
     {
         [, $salesman, $customer, , $testDrive] = $this->context();
         $route = route('salesman.customers.test-drives.book.store', [$customer, $testDrive]);
-        $this->actingAs($salesman)->post($route, $this->payload(['booking_date' => '2020-01-01']))->assertSessionHasErrors('booking_date');
-        $this->actingAs($salesman)->post($route, $this->payload(['expected_delivery_date' => '2026-08-31']))->assertSessionHasErrors('expected_delivery_date');
+$this->actingAs($salesman)->post($route, $this->payload(['booking_date' => today()->subDay()->toDateString()]))->assertSessionHasErrors('booking_date');
+$this->actingAs($salesman)->post($route, $this->payload(['expected_delivery_date' => today()->subDay()->toDateString()]))->assertSessionHasErrors('expected_delivery_date');
         $this->actingAs($salesman)->post($route, $this->payload(['notes' => str_repeat('x', 2001)]))->assertSessionHasErrors('notes');
         $this->assertDatabaseCount('bookings', 0);
     }
@@ -152,12 +152,12 @@ class BookingWorkflowTest extends TestCase
         $salesman = User::factory()->create(['role' => UserRole::Salesman, 'dealer_id' => $dealer->id]);
         $customer = Customer::factory()->create(['salesman_id' => $salesman->id]);
         $vehicle = Vehicle::factory()->create(['dealer_id' => $dealer->id, 'status' => 'available']);
-        $testDrive = TestDrive::query()->create(['customer_id' => $customer->id, 'vehicle_id' => $vehicle->id, 'salesman_id' => $salesman->id, 'scheduled_date' => '2026-09-01', 'scheduled_time' => '14:00', 'status' => $status, 'notes' => 'Eligible Test Drive']);
+        $testDrive = TestDrive::query()->create(['customer_id' => $customer->id, 'vehicle_id' => $vehicle->id, 'salesman_id' => $salesman->id, 'scheduled_date' => today()->addDays(3)->toDateString(), 'scheduled_time' => '14:00', 'status' => $status, 'notes' => 'Eligible Test Drive']);
         return [$dealer, $salesman, $customer, $vehicle, $testDrive];
     }
 
     private function payload(array $overrides = []): array
     {
-        return array_merge(['booking_date' => '2026-09-02', 'expected_delivery_date' => '2026-09-20', 'booking_amount' => 500000, 'notes' => 'Customer confirmed model preference.'], $overrides);
+        return array_merge(['booking_date' => today()->toDateString(), 'expected_delivery_date' => today()->addDays(10)->toDateString(), 'booking_amount' => 500000, 'notes' => 'Customer confirmed model preference.'], $overrides);
     }
 }

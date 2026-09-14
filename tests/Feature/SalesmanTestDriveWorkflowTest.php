@@ -110,11 +110,11 @@ class SalesmanTestDriveWorkflowTest extends TestCase
         $appointment = $this->appointment($customer, $vehicle, $salesman);
 
         $this->actingAs($salesman)->putJson(route('salesman.test-drives.update', $appointment), $this->updatePayload([
-            'slot_id' => $this->slot($vehicle, '2026-09-08', '16:00', '16:30')->id, 'status' => 'rescheduled',
+            'slot_id' => $this->slot($vehicle, today()->addDays(8)->toDateString(), '16:00', '16:30')->id, 'status' => 'rescheduled',
         ]))->assertOk()->assertJsonPath('success', true)->assertJsonPath('message', 'Test Drive rescheduled successfully.');
 
         $appointment->refresh();
-        $this->assertSame('2026-09-08', $appointment->scheduled_date->format('Y-m-d'));
+        $this->assertSame(today()->addDays(8)->format('Y-m-d'), $appointment->scheduled_date->format('Y-m-d'));
         $this->assertStringStartsWith('16:00', $appointment->scheduled_time);
         $this->assertSame(TestDriveStatus::Rescheduled, $appointment->status);
     }
@@ -181,7 +181,7 @@ class SalesmanTestDriveWorkflowTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => DevelopmentTestDriveSeeder::SALESMAN_EMAIL, 'role' => 'salesman', 'dealer_id' => $dealer->id]);
         $this->assertDatabaseHas('customers', ['email' => DevelopmentTestDriveSeeder::CUSTOMER_EMAIL, 'name' => 'Demo Customer - Rahim Ahmed']);
         $demo = TestDrive::query()->firstOrFail();
-        $this->assertSame('2026-09-02', $demo->scheduled_date->format('Y-m-d'));
+        $this->assertSame(\Illuminate\Support\Carbon::today()->addDays(2)->format('Y-m-d'), $demo->scheduled_date->format('Y-m-d'));
         $this->assertSame('15:00', $demo->scheduled_time);
         $this->assertSame(TestDriveStatus::Scheduled, $demo->status);
     }
@@ -204,7 +204,7 @@ class SalesmanTestDriveWorkflowTest extends TestCase
         return TestDrive::query()->create([
             'customer_id' => $customer->id, 'vehicle_id' => $vehicle->id, 'salesman_id' => $salesman->id,
             'slot_id' => $slot->id,
-            'scheduled_date' => '2026-09-02', 'scheduled_time' => '15:00',
+            'scheduled_date' => today()->addDays(2)->toDateString(), 'scheduled_time' => '15:00',
             'status' => TestDriveStatus::Scheduled, 'notes' => 'Demo appointment.',
         ]);
     }
@@ -221,8 +221,9 @@ class SalesmanTestDriveWorkflowTest extends TestCase
         return array_merge(['slot_id' => TestDrive::query()->latest('id')->value('slot_id'), 'status' => 'scheduled', 'notes' => 'Updated notes.'], $overrides);
     }
 
-    private function slot(Vehicle $vehicle, string $date = '2026-09-02', string $start = '15:00', string $end = '15:30'): TestDriveSlot
+    private function slot(Vehicle $vehicle, string $date = null, string $start = '15:00', string $end = '15:30'): TestDriveSlot
     {
+        $date ??= today()->addDays(2)->toDateString();
         return TestDriveSlot::query()->firstOrCreate(['vehicle_id' => $vehicle->id, 'slot_date' => \Illuminate\Support\Carbon::parse($date)->startOfDay(), 'start_time' => $start, 'end_time' => $end]);
     }
 }
